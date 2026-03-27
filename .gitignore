@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 *.egg-info/
 .pytest_cache/
+*_health_report.md
+health_report.md

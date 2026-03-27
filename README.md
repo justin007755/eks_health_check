@@ -161,6 +161,9 @@ python -m pytest tests/test_report.py -v
 
 ```
 eks_health_check/
+├── pyproject.toml           # 项目依赖和元数据配置
+├── README.md                # 本文档
+├── .gitignore
 ├── __init__.py
 ├── __main__.py              # python -m eks_health_check 入口
 ├── cli.py                   # CLI 参数解析和流程编排
@@ -179,11 +182,18 @@ eks_health_check/
 ├── analyzer/                # AI Analyzer 智能分析层
 │   ├── ai_analyzer.py       #   Bedrock AI 分析 + fallback
 │   └── template_engine.py   #   模板化建议生成
-└── report/                  # Report Generator 报告生成层
-    ├── score_calculator.py  #   评分计算
-    ├── markdown_renderer.py #   Markdown 渲染
-    ├── report_parser.py     #   报告解析（round-trip 验证）
-    └── report_generator.py  #   报告生成编排
+├── report/                  # Report Generator 报告生成层
+│   ├── score_calculator.py  #   评分计算
+│   ├── markdown_renderer.py #   Markdown 渲染
+│   ├── report_parser.py     #   报告解析（round-trip 验证）
+│   └── report_generator.py  #   报告生成编排
+└── tests/                   # 单元测试和集成测试
+    ├── test_models.py       #   数据模型测试
+    ├── test_scanner.py      #   Config Scanner 测试
+    ├── test_checkers.py     #   Check Engine 测试
+    ├── test_analyzer.py     #   AI Analyzer 测试
+    ├── test_report.py       #   Report Generator 测试
+    └── test_cli.py          #   CLI 集成测试
 ```
 
 ## 架构
