@@ -1,0 +1,165 @@
+rules:
+  # =========================================================================
+  # 基础架构 (Infrastructure) — INFRA-001 ~ INFRA-005
+  # =========================================================================
+  - id: "INFRA-001"
+    name: "节点组实例类型多样性"
+    dimension: "infrastructure"
+    description: "检查节点组是否使用多种实例类型，单一类型会降低可用性"
+    risk_level: "warning"
+    threshold:
+      min_instance_types: 2
+
+  - id: "INFRA-002"
+    name: "可用区分布"
+    dimension: "infrastructure"
+    description: "检查节点组是否跨多个可用区部署"
+    risk_level: "warning"
+    threshold:
+      min_azs: 2
+
+  - id: "INFRA-003"
+    name: "节点资源利用率"
+    dimension: "infrastructure"
+    description: "分析节点 CPU/内存 request 总量与 allocatable 资源的比率"
+    risk_level: "warning"
+    threshold:
+      max_cpu_ratio: 0.85
+      max_memory_ratio: 0.85
+
+  - id: "INFRA-004"
+    name: "自动伸缩组件"
+    dimension: "infrastructure"
+    description: "检查是否使用 Karpenter 或 Cluster Autoscaler"
+    risk_level: "info"
+
+  - id: "INFRA-005"
+    name: "EKS 集群版本生命周期"
+    dimension: "infrastructure"
+    description: "检查集群版本是否在 AWS 支持的生命周期内"
+    risk_level: "warning"
+
+  # =========================================================================
+  # 网络 (Network) — NET-001 ~ NET-006
+  # =========================================================================
+  - id: "NET-001"
+    name: "VPC CNI 配置参数"
+    dimension: "network"
+    description: "检查 WARM_ENI_TARGET、WARM_IP_TARGET、MINIMUM_IP_TARGET、ENABLE_PREFIX_DELEGATION 等关键参数"
+    risk_level: "info"
+
+  - id: "NET-002"
+    name: "CoreDNS ndots 配置"
+    dimension: "network"
+    description: "检查 ndots 值是否过高，高 ndots 值会导致大量无效 DNS 查询"
+    risk_level: "warning"
+    threshold:
+      max_ndots: 2
+
+  - id: "NET-003"
+    name: "CoreDNS 副本数与集群规模匹配"
+    dimension: "network"
+    description: "检查 CoreDNS 副本数是否与集群规模匹配"
+    risk_level: "warning"
+    threshold:
+      min_replicas_per_100_nodes: 2
+
+  - id: "NET-004"
+    name: "NodeLocal DNSCache"
+    dimension: "network"
+    description: "检查是否启用了 NodeLocal DNSCache 以减轻 CoreDNS 压力"
+    risk_level: "info"
+
+  - id: "NET-005"
+    name: "子网可用 IP 地址"
+    dimension: "network"
+    description: "检查子网可用 IP 数量是否低于节点数的 2 倍"
+    risk_level: "critical"
+    threshold:
+      min_ip_ratio: 2
+
+  - id: "NET-006"
+    name: "Security Group 过度开放"
+    dimension: "network"
+    description: "检查 Security Group 是否存在 0.0.0.0/0 入站规则"
+    risk_level: "warning"
+
+  # =========================================================================
+  # 安全合规 (Security) — SEC-001 ~ SEC-006
+  # =========================================================================
+  - id: "SEC-001"
+    name: "审计日志启用状态"
+    dimension: "security"
+    description: "基于 CIS EKS Benchmark 检查控制平面审计日志是否启用"
+    risk_level: "warning"
+
+  - id: "SEC-002"
+    name: "API Server endpoint 访问策略"
+    dimension: "security"
+    description: "检查 API Server 的公网访问配置和 endpoint access 策略"
+    risk_level: "info"
+
+  - id: "SEC-003"
+    name: "API Server 纯 Public 无 CIDR 限制"
+    dimension: "security"
+    description: "检查 API Server endpoint 是否为纯 Public 访问且未配置 CIDR 限制"
+    risk_level: "critical"
+
+  - id: "SEC-004"
+    name: "Secrets envelope encryption"
+    dimension: "security"
+    description: "检查是否启用了 Secrets 加密"
+    risk_level: "warning"
+
+  - id: "SEC-005"
+    name: "节点组 AMI 版本"
+    dimension: "security"
+    description: "检查节点组是否使用了最新的 EKS Optimized AMI"
+    risk_level: "warning"
+
+  - id: "SEC-006"
+    name: "aws-node 默认 IAM 角色使用"
+    dimension: "security"
+    description: "检查是否存在使用 aws-node ServiceAccount 默认 IAM 角色的工作负载"
+    risk_level: "warning"
+
+  # =========================================================================
+  # 应用适配性 (Workload) — WORK-001 ~ WORK-006
+  # =========================================================================
+  - id: "WORK-001"
+    name: "Pod 资源 request/limit 配置"
+    dimension: "workload"
+    description: "检查 Pod 是否设置了资源 request 和 limit"
+    risk_level: "warning"
+
+  - id: "WORK-002"
+    name: "资源 request 与 limit 差异"
+    dimension: "workload"
+    description: "检查 request 与 limit 差异是否超过 3 倍"
+    risk_level: "warning"
+    threshold:
+      max_ratio: 3
+
+  - id: "WORK-003"
+    name: "PodDisruptionBudget 配置"
+    dimension: "workload"
+    description: "检查 Deployment 是否配置了 PDB"
+    risk_level: "info"
+
+  - id: "WORK-004"
+    name: "HPA 配置合理性"
+    dimension: "workload"
+    description: "检查 HPA 的 minReplicas、metrics 类型、scaleDown stabilizationWindowSeconds"
+    risk_level: "warning"
+
+  - id: "WORK-005"
+    name: "健康检查探针配置"
+    dimension: "workload"
+    description: "检查 Pod 是否配置了 readinessProbe 和 livenessProbe"
+    risk_level: "warning"
+
+  - id: "WORK-006"
+    name: "Pod Identity / IRSA 使用"
+    dimension: "workload"
+    description: "检查 Pod 是否使用 Pod Identity 或 IRSA，直接使用 AWS 凭证为严重风险"
+    risk_level: "critical"
