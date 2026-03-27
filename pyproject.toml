@@ -1,0 +1,15 @@
+[project]
+name = "eks-health-check"
+version = "0.1.0"
+description = "EKS 集群健康体检 POC 工具"
+requires-python = ">=3.11"
+dependencies = [
+    "kubernetes",
+    "boto3",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
