@@ -30,6 +30,8 @@ class AwsCollector:
     def collect(self, cluster_name: str) -> AwsConfig:
         """采集 EKS、EC2、VPC、IAM 等配置，返回 AwsConfig。"""
         cluster_info = self._describe_cluster(cluster_name)
+        # 确保 region 字段存在（describe_cluster 不直接返回 region）
+        cluster_info.setdefault("region", self._region)
         node_groups = self._collect_node_groups(cluster_name)
         network = self._build_network_config(cluster_info)
         security = self._build_security_config(cluster_info)
